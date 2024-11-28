@@ -34,8 +34,8 @@ COPY etc /etc
 COPY usr /usr
 
 # Apply hardened firewall configuration
-RUN firewall-offline-cmd --set-default-zone public
-RUN firewall-offline-cmd --remove-service ssh
+# RUN firewall-offline-cmd --set-default-zone public
+# RUN firewall-offline-cmd --remove-service ssh
 
 # Restrict permissions on quadlet directory
 RUN chmod 700 /etc/containers/systemd
