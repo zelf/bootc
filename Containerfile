@@ -12,13 +12,23 @@ RUN dnf5 -y install --allowerasing ffmpeg
 RUN dnf5 -y swap noopenh264 openh264 && dnf5 -y install mozilla-openh264
 
 # Bulk of layered packages
-RUN dnf5 -y install vim bat btop pv zstd nmap-ncat zsh
+RUN dnf5 -y install \
+  vim \
+  bat \
+  btop \
+  pv \
+  zstd \
+  nmap-ncat \
+  distrobox \
+  just \
+  tailscale \
+  lm_sensors \
+  podman-compose \
+  webkit2gtk3 \
+  libusb
 
 # Set vim as default editor
 RUN dnf5 -y swap nano-default-editor vim-default-editor
-
-# Remove default color prompt (is replaced with a custom one)
-RUN dnf5 -y remove bash-color-prompt
 
 # Install virtualization tools
 RUN dnf5 -y install libvirt libvirt-daemon-kvm virt-manager
@@ -35,7 +45,7 @@ COPY usr /usr
 
 # Apply hardened firewall configuration
 # RUN firewall-offline-cmd --set-default-zone public
-# RUN firewall-offline-cmd --remove-service ssh
+RUN firewall-offline-cmd --remove-service ssh
 
 # Restrict permissions on quadlet directory
 RUN chmod 700 /etc/containers/systemd
