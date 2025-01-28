@@ -25,7 +25,8 @@ RUN dnf5 -y install \
   lm_sensors \
   podman-compose \
   webkit2gtk3 \
-  libusb
+  libusb \
+  steam-devices
 
 # Set vim as default editor
 RUN dnf5 -y swap nano-default-editor vim-default-editor
