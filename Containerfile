@@ -11,22 +11,24 @@ RUN dnf5 -y install --allowerasing ffmpeg
 # Install openh264
 RUN dnf5 -y swap noopenh264 openh264 && dnf5 -y install mozilla-openh264
 
+RUN dnf5 copr enable swayfx/swayfx && dnf5 remove sway-config-fedora && dnf5 swap sway swayfx
+
 # Bulk of layered packages
 RUN dnf5 -y install \
-  vim \
-  bat \
-  btop \
-  pv \
-  zstd \
-  nmap-ncat \
-  distrobox \
-  just \
-  tailscale \
-  lm_sensors \
-  podman-compose \
-  webkit2gtk3 \
-  libusb \
-  steam-devices
+      vim \
+      bat \
+      btop \
+      pv \
+      zstd \
+      nmap-ncat \
+      distrobox \
+      just \
+      tailscale \
+      lm_sensors \
+      podman-compose \
+      webkit2gtk3 \
+      libusb \
+      steam-devices
 
 # Set vim as default editor
 RUN dnf5 -y swap nano-default-editor vim-default-editor
