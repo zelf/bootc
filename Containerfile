@@ -11,8 +11,6 @@ RUN dnf5 -y install --allowerasing ffmpeg
 # Install openh264
 RUN dnf5 -y swap noopenh264 openh264 && dnf5 -y install mozilla-openh264
 
-RUN dnf5 copr enable -y swayfx/swayfx && dnf5 -y remove sway-config-fedora sway && dnf5 -y install swayfx sddm sddm-wayland-sway sway-systemd
-
 # Bulk of layered packages
 RUN dnf5 -y install \
       vim \
