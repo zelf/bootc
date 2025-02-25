@@ -48,6 +48,8 @@ COPY usr /usr
 # RUN firewall-offline-cmd --set-default-zone public
 RUN firewall-offline-cmd --remove-service ssh
 
+RUN systemctl enable tailscaled.service
+
 # Restrict permissions on quadlet directory
 RUN chmod 700 /etc/containers/systemd
 
