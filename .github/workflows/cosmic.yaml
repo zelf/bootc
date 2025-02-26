@@ -1,12 +1,12 @@
-name: sway 41
+name: cosmic 41
 on:
   schedule:
-    - cron: "5 3 * * *" # 3am-ish UTC everyday (timed against official fedora container pushes)
+    - cron: "5 8 * * *" # 3am-ish UTC everyday (timed against official fedora container pushes)
   workflow_dispatch:
 
 jobs:
   build:
-    name: Build Sway
+    name: Build cosmic
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -43,7 +43,7 @@ jobs:
           attempt_delay: 15000
           command: |
             set -eo pipefail
-            ver=$(skopeo inspect docker://quay.io/fedora-ostree-desktops/sway-atomic:41 | jq -r '.Labels["org.opencontainers.image.version"]')
+            ver=$(skopeo inspect docker://quay.io/fedora-ostree-desktops/cosmic-atomic:41 | jq -r '.Labels["org.opencontainers.image.version"]')
             if [ -z "$ver" ] || [ "null" = "$ver" ]; then
               echo "inspected image version must not be empty or null"
               exit 1
@@ -54,11 +54,11 @@ jobs:
         uses: docker/metadata-action@v5
         id: meta
         with:
-          images: ghcr.io/zelf/sway 
+          images: ghcr.io/zelf/cosmic
           labels: |
-            org.opencontainers.image.title=sway
+            org.opencontainers.image.title=cosmic
             org.opencontainers.image.version=${{ env.SOURCE_IMAGE_VERSION }}
-            org.opencontainers.image.description=Custom sway image.
+            org.opencontainers.image.description=Custom cosmic image.
             io.artifacthub.package.readme-url=https://raw.githubusercontent.com/zelf/bootc/main/README.md
             io.artifacthub.package.logo-url=https://avatars.githubusercontent.com/u/989504?v=4
 
@@ -67,7 +67,7 @@ jobs:
         uses: redhat-actions/buildah-build@v2
         with:
           containerfiles: ./Containerfile
-          image: ghcr.io/zelf/sway
+          image: ghcr.io/zelf/cosmic
           tags: ${{ steps.generate-tags.outputs.alias_tags }}
           labels: ${{ steps.meta.outputs.labels }}
           oci: true
@@ -88,7 +88,7 @@ jobs:
           attempt_limit: 3
           attempt_delay: 15000
           with: |
-            image: ghcr.io/zelf/sway
+            image: ghcr.io/zelf/cosmic
             tags: ${{ steps.build_image.outputs.tags }}
             registry: ghcr.io
             extra-args: |

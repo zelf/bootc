@@ -1,4 +1,4 @@
-FROM quay.io/fedora-ostree-desktops/cosmic-atomic:rawhide
+FROM quay.io/fedora-ostree-desktops/cosmic-atomic:41
 
 # dnf configuration has to be in effect during build
 COPY etc/dnf /etc/dnf
