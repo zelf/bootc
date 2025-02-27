@@ -6,7 +6,7 @@ COPY etc/dnf /etc/dnf
 # Add rpmfusion repositories
 RUN dnf5 -y install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 
-RUN dnf5 copr enable wezfurlong/wezterm-nightly
+RUN dnf5 -y copr enable wezfurlong/wezterm-nightly
 # RUN dnf -y install @cosmic-desktop-environment
 
 # Install ffmpeg (removing all the -free replacements is required)
