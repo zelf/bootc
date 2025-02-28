@@ -22,7 +22,7 @@ systemctl reboot
 And now we move to bootc:
 
 ```bash
-sudo bootc switch ghcr.io/zelf/sway:latest
+  sudo bootc switch --enforce-container-sigpolicy ghcr.io/zelf/sway:latest
 ```
 
 Now to update, use:
