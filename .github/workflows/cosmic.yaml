@@ -66,7 +66,7 @@ jobs:
         id: build_image
         uses: redhat-actions/buildah-build@v2
         with:
-          containerfiles: ./Containerfile
+          containerfiles: ./desktop/cosmic/Containerfile
           image: ghcr.io/zelf/cosmic
           tags: ${{ steps.generate-tags.outputs.alias_tags }}
           labels: ${{ steps.meta.outputs.labels }}
