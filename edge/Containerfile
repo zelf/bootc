@@ -6,6 +6,7 @@ COPY edge/etc/dnf /etc/dnf
 # Bulk of layered packages
 RUN dnf5 -y install \
       vim \
+      firewalld \
       tailscale
 
 # Set vim as default editor
@@ -15,9 +16,10 @@ RUN dnf5 -y swap nano-default-editor vim-default-editor
 RUN dnf5 -y autoremove
 
 RUN firewall-offline-cmd --set-default-zone public
-RUN firewall-offline-cmd --remove-service ssh
+# RUN firewall-offline-cmd --remove-service ssh
 
 RUN systemctl enable tailscaled.service
+RUN systemctl enable firewalld
 
 # Restrict permissions on quadlet directory
 RUN chmod 700 /etc/containers/systemd
