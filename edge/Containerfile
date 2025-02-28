@@ -1,0 +1,26 @@
+FROM quay.io/fedora/fedora-bootc:41
+
+# dnf configuration has to be in effect during build
+COPY edge/etc/dnf /etc/dnf
+
+# Bulk of layered packages
+RUN dnf5 -y install \
+      vim \
+      tailscale
+
+# Set vim as default editor
+RUN dnf5 -y swap nano-default-editor vim-default-editor
+
+# Remove unneeded packages (currently doesn't actually reduce space, but reduces clutter)
+RUN dnf5 -y autoremove
+
+RUN firewall-offline-cmd --set-default-zone public
+RUN firewall-offline-cmd --remove-service ssh
+
+RUN systemctl enable tailscaled.service
+
+# Restrict permissions on quadlet directory
+RUN chmod 700 /etc/containers/systemd
+
+# https://github.com/ostreedev/ostree-rs-ext/issues/159
+RUN ostree container commit
