@@ -16,7 +16,7 @@ RUN dnf5 -y swap nano-default-editor vim-default-editor
 RUN dnf5 -y autoremove
 
 # RUN firewall-offline-cmd --set-default-zone public
-# RUN firewall-offline-cmd --remove-service ssh
+RUN firewall-offline-cmd --add-service https
 
 RUN systemctl enable tailscaled.service
 RUN systemctl enable firewalld
