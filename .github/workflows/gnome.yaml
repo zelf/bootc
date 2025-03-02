@@ -1,7 +1,7 @@
 name: gnome 41
 on:
   schedule:
-    - cron: "5 8 * * *" # 3am-ish UTC everyday (timed against official fedora container pushes)
+    - cron: "5 8 * * 2"
   workflow_dispatch:
 
 jobs:

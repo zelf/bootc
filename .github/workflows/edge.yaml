@@ -1,7 +1,7 @@
 name: edge 41
 on:
   schedule:
-    - cron: "5 3 * * *" # 3am-ish UTC everyday (timed against official fedora container pushes)
+    - cron: "5 3 * * 2"
   workflow_dispatch:
 
 jobs:
