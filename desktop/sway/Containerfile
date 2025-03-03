@@ -60,7 +60,7 @@ RUN systemctl enable tailscaled.service
 
 # Power management
 RUN systemctl enable tlp
-RUN sudo systemctl mask systemd-rfkill.service systemd-rfkill.socket
+RUN systemctl mask systemd-rfkill.service systemd-rfkill.socket
 
 # Restrict permissions on quadlet directory
 RUN chmod 700 /etc/containers/systemd
