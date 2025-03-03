@@ -32,6 +32,8 @@ RUN dnf5 -y install \
       libusb \
       steam-devices \
       osbuild-selinux \
+      tlp \
+      tlp-rdw \
       wezterm
 
 # Set vim as default editor
@@ -55,6 +57,7 @@ COPY desktop/sway/usr /usr
 RUN firewall-offline-cmd --remove-service ssh
 
 RUN systemctl enable tailscaled.service
+RUN systemctl enable tlp
 
 # Restrict permissions on quadlet directory
 RUN chmod 700 /etc/containers/systemd
