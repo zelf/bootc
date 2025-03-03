@@ -57,7 +57,10 @@ COPY desktop/sway/usr /usr
 RUN firewall-offline-cmd --remove-service ssh
 
 RUN systemctl enable tailscaled.service
+
+# Power management
 RUN systemctl enable tlp
+RUN sudo systemctl mask systemd-rfkill.service systemd-rfkill.socket
 
 # Restrict permissions on quadlet directory
 RUN chmod 700 /etc/containers/systemd
