@@ -10,8 +10,8 @@ RUN dnf5 -y install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-rel
 
 # Install ffmpeg (removing all the -free replacements is required) and openh264
 RUN dnf5 -y install --allowerasing ffmpeg && \
-    dnf5 -y update @multimedia --setopt="install_weak_deps=False" --exclude=PackageKit-gstreamer-plugin && \
-    dnf5 -y update @sound-and-video && \
+    dnf5 -y group install multimedia --setopt="install_weak_deps=False" --exclude=PackageKit-gstreamer-plugin && \
+    dnf5 -y group upgrade sound-and-video && \
     dnf5 -y swap noopenh264 openh264 && \
     dnf5 -y install mozilla-openh264
 
@@ -44,7 +44,7 @@ RUN dnf5 -y install \
 RUN dnf5 -y swap nano-default-editor vim-default-editor
 
 # Install virtualization tools
-RUN dnf5 -y install @virtualization
+RUN dnf5 -y group install virtualization
 
 # Remove Firefox rpm (superseded by flatpak Firefox)
 RUN rpm -e firefox firefox-langpacks
