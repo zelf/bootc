@@ -11,7 +11,7 @@ RUN dnf5 -y install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-rel
 # Install ffmpeg (removing all the -free replacements is required) and openh264
 RUN dnf5 -y install --allowerasing ffmpeg && \
     dnf5 -y group install multimedia --setopt="install_weak_deps=False" --exclude=PackageKit-gstreamer-plugin && \
-    dnf5 -y group upgrade sound-and-video && \
+    dnf5 -y group install sound-and-video && \
     dnf5 -y swap noopenh264 openh264 && \
     dnf5 -y install mozilla-openh264
 
