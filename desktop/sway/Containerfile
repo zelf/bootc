@@ -37,8 +37,7 @@ RUN dnf5 -y install \
       steam-devices \
       osbuild-selinux \
       tlp \
-      tlp-rdw \
-      wezterm
+      tlp-rdw
 
 # Set vim as default editor
 RUN dnf5 -y swap nano-default-editor vim-default-editor
