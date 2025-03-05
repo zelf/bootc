@@ -4,16 +4,20 @@ FROM quay.io/fedora-ostree-desktops/sway-atomic:41
 COPY desktop/sway/etc/dnf /etc/dnf
 
 # Add rpmfusion repositories
-RUN dnf5 -y install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+RUN dnf5 -y install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
+                    https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm && \
+    dnf5 -y group update core
 
-RUN dnf5 -y copr enable wezfurlong/wezterm-nightly
-# RUN dnf -y install @sway-desktop-environment
+# Install ffmpeg (removing all the -free replacements is required) and openh264
+RUN dnf5 -y install --allowerasing ffmpeg && \
+    dnf5 -y update @multimedia --setopt="install_weak_deps=False" --exclude=PackageKit-gstreamer-plugin && \
+    dnf5 -y update @sound-and-video && \
+    dnf5 -y swap noopenh264 openh264 && \
+    dnf5 -y install mozilla-openh264
 
-# Install ffmpeg (removing all the -free replacements is required)
-RUN dnf5 -y install --allowerasing ffmpeg
-
-# Install openh264
-RUN dnf5 -y swap noopenh264 openh264 && dnf5 -y install mozilla-openh264
+# Install Hardware Accelerated Codecs for AMD GPUs. This improves video playback and encoding performance on systems with AMD graphics.
+RUN dnf5 -y swap mesa-va-drivers mesa-va-drivers-freeworld && \
+    dnf5 -y swap mesa-vdpau-drivers mesa-vdpau-drivers-freeworld
 
 # Bulk of layered packages
 RUN dnf5 -y install \
@@ -40,7 +44,7 @@ RUN dnf5 -y install \
 RUN dnf5 -y swap nano-default-editor vim-default-editor
 
 # Install virtualization tools
-RUN dnf5 -y install libvirt libvirt-daemon-kvm virt-manager
+RUN dnf5 -y install @virtualization
 
 # Remove Firefox rpm (superseded by flatpak Firefox)
 RUN rpm -e firefox firefox-langpacks
@@ -64,9 +68,6 @@ RUN systemctl mask systemd-rfkill.service systemd-rfkill.socket
 
 # Restrict permissions on quadlet directory
 RUN chmod 700 /etc/containers/systemd
-
-
-RUN dnf5 -y copr disable wezfurlong/wezterm-nightly
 
 # https://github.com/ostreedev/ostree-rs-ext/issues/159
 RUN ostree container commit
