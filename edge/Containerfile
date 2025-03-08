@@ -18,7 +18,7 @@ RUN dnf5 -y swap nano-default-editor vim-default-editor
 # Remove unneeded packages (currently doesn't actually reduce space, but reduces clutter)
 RUN dnf5 -y autoremove
 
-COPY desktop/edge/etc /etc
+COPY edge/etc /etc
 
 # RUN firewall-offline-cmd --set-default-zone public
 RUN firewall-offline-cmd --add-service https
