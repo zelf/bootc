@@ -1,5 +1,5 @@
 [DEFAULT]
-banaction = firewallcmd-ipset
+banaction = firewallcmd-rich-rules
 
 [sshd]
 enabled = true
