@@ -1,0 +1,9 @@
+[DEFAULT]
+banaction = firewallcmd-ipset
+
+[sshd]
+enabled = true
+port = ssh
+logpath = /var/log/auth.log
+maxretry = 5
+bantime = 3600
