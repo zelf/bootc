@@ -12,6 +12,7 @@ RUN dnf5 -y install \
       fail2ban-firewalld \
       fail2ban-selinux
 
+
 # Set vim as default editor
 RUN dnf5 -y swap nano-default-editor vim-default-editor
 
@@ -26,6 +27,9 @@ RUN firewall-offline-cmd --add-service https
 RUN systemctl enable tailscaled.service
 RUN systemctl enable firewalld
 RUN systemctl enable fail2ban
+
+# composefs has / as RO. this service fails. todo: check why
+RUN systemctl mask systemd-remount-fs.service
 
 # Restrict permissions on quadlet directory
 RUN chmod 700 /etc/containers/systemd
