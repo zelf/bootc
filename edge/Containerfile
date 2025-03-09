@@ -6,6 +6,7 @@ COPY edge/etc/dnf /etc/dnf
 # Bulk of layered packages
 RUN dnf5 -y install \
       vim \
+      tmux
       firewalld \
       tailscale \
       fail2ban \
