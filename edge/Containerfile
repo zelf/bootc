@@ -29,6 +29,7 @@ COPY edge/etc /etc
 
 # RUN firewall-offline-cmd --set-default-zone public
 RUN firewall-offline-cmd --add-service https
+RUN firewall-offline-cmd --remove-service mdns
 
 RUN systemctl enable tailscaled.service
 RUN systemctl enable firewalld
