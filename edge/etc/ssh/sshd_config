@@ -16,6 +16,6 @@ ClientAliveCountMax 3
 PidFile /var/run/sshd.pid
 HostbasedAuthentication no
 IgnoreRhosts yes
-IgnoreUserKnownHosts yes
 MaxSessions 5
 MaxStartups 3:10:30
+LoginGraceTime 30
