@@ -13,6 +13,7 @@ RUN dnf5 -y install \
       zstd \
       nmap-ncat \
       firewalld \
+      pam_systemd \
       tailscale \
       fail2ban \
       fail2ban-firewalld \

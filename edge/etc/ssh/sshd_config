@@ -19,3 +19,4 @@ IgnoreRhosts yes
 MaxSessions 5
 MaxStartups 3:10:30
 LoginGraceTime 30
+UsePAM yes
