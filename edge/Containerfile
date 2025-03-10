@@ -31,7 +31,7 @@ COPY edge/etc /etc
 RUN firewall-offline-cmd --add-service https
 RUN firewall-offline-cmd --remove-service mdns
 
-# RUN firewall-offline-cmd --direct --add-rule ipv4 nat PREROUTING 0 -p tcp --dport 80 -j REDIRECT --to-port 8000
+RUN firewall-offline-cmd --direct --add-rule ipv4 nat PREROUTING 0 -p tcp --dport 80 -j REDIRECT --to-port 8000
 RUN firewall-offline-cmd --direct --add-rule ipv4 nat PREROUTING 0 -p tcp --dport 443 -j REDIRECT --to-port 8443
 
 
