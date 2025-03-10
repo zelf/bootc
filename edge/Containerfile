@@ -31,6 +31,12 @@ COPY edge/etc /etc
 RUN firewall-offline-cmd --add-service https
 RUN firewall-offline-cmd --remove-service mdns
 
+RUN firewall-offline-cmd --new-policy container-redirect && \
+    firewall-offline-cmd --policy container-redirect --add-forward-port=port=80:proto=tcp:toport=8000 && \
+    firewall-offline-cmd --zone public --add-policy container-redirect && \
+    firewall-offline-cmd --save
+
+
 RUN systemctl enable tailscaled.service
 RUN systemctl enable firewalld
 RUN systemctl enable fail2ban
