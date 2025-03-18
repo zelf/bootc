@@ -37,12 +37,18 @@ RUN dnf5 -y install \
       steam-devices \
       osbuild-selinux \
       tlp \
-      tlp-rdw \
+      tlp-rdw
+      
+RUN dnf5 -y swap OpenCL-ICD-Loader ocl-icd
+
+
+RUN dnf5 -y install \
       rocminfo \
       rocm-opencl \
       rocm-clinfo \
       rocm-smi \
-      rocm-hip
+      rocm-hip \
+      --allowerasing
 
 # Set vim as default editor
 RUN dnf5 -y swap nano-default-editor vim-default-editor
