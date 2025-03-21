@@ -38,7 +38,11 @@ RUN dnf5 -y install \
       osbuild-selinux \
       tlp \
       tlp-rdw
-      
+
+
+# Failed to resolve the transaction:
+# Problem: conflicting requests
+#   - package rocm-opencl-6.2.1-2.fc41.x86_64 from updates-archive requires ocl-icd(x86-64), but none of the providers can be installed
 RUN dnf5 -y swap OpenCL-ICD-Loader ocl-icd
 
 
