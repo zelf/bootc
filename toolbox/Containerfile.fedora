@@ -36,7 +36,7 @@ RUN dnf install -y \
     dnf swap -y mesa-vdpau-drivers mesa-vdpau-drivers-freeworld && \
     dnf clean all
 
-RUN dnf copr enable atim/lazygit -y \
+RUN dnf copr enable atim/lazygit -y && \
     dnf install -y \
       neovim \
       lazygit && \
