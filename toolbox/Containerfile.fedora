@@ -36,5 +36,7 @@ RUN dnf install -y \
     dnf swap -y mesa-vdpau-drivers mesa-vdpau-drivers-freeworld && \
     dnf clean all
 
+RUN dnf install -y neovim
+
 # Cleanup
 RUN rm -rf /tmp/*
