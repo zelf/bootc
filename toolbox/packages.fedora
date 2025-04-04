@@ -15,6 +15,7 @@ glibc-all-langpacks
 glibc-locale-source
 gnupg2
 gnupg2-smime
+golang
 helm
 hostname
 iproute
