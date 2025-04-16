@@ -21,6 +21,7 @@ RUN dnf5 -y swap mesa-va-drivers mesa-va-drivers-freeworld && \
 
 # Bulk of layered packages
 RUN dnf5 -y install \
+      android-tools \
       vim \
       bat \
       btop \
