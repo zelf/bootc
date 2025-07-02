@@ -38,7 +38,8 @@ RUN dnf5 -y install \
       steam-devices \
       osbuild-selinux \
       tlp \
-      tlp-rdw
+      tlp-rdw \
+      kde-connect
 
 
 # Failed to resolve the transaction:
