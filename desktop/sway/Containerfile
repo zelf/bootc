@@ -2,13 +2,16 @@ FROM quay.io/fedora-ostree-desktops/sway-atomic:42
 
 COPY desktop/sway/etc /etc
 COPY desktop/sway/usr /usr
+COPY desktop/sway/scripts/*.sh  /usr/local/bin/
 
-RUN desktop/sway/install.sh
+RUN bash /usr/local/bin/install.sh && \
+    ostree container commit
 
+RUN bash /usr/local/bin/systemd.sh && \
+    ostree container commit
 
-RUN desktop/sway/systemd.sh
-
-RUN desktop/sway/firewalld.sh
+RUN bash /usr/local/bin/firewalld.sh && \
+    ostree container commit
 
 RUN bootc container lint
 

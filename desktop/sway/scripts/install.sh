@@ -55,5 +55,3 @@ dnf5 -y autoremove
 dnf5 -y clean all
 
 rm -rf /var/cache/dnf /var/lib/dnf /var/log/*
-
-ostree container commit

@@ -2,4 +2,3 @@
 
 set -xeuo pipefail
 firewall-offline-cmd --remove-service ssh
-ostree container commit
