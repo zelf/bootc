@@ -1,11 +1,10 @@
 FROM quay.io/fedora-ostree-desktops/sway-atomic:42
 
-# dnf configuration has to be in effect during build
-COPY desktop/sway/etc/dnf /etc/dnf
+COPY desktop/sway/etc /etc
+COPY desktop/sway/usr /usr
 
 # Add rpmfusion repositories
-RUN <<EOF 
-
+RUN <<EOF
   set -xeuo pipefail
   dnf5 -y install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
   dnf5 -y install https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
@@ -58,15 +57,17 @@ RUN <<EOF
 
   # Remove unneeded packages (currently doesn't actually reduce space, but reduces clutter)
   dnf5 -y autoremove
+  dnf5 -y clean all
+
+  rm -rf /var/cache/dnf /var/lib/dnf /var/log/*
 
   ostree container commit
 EOF
 
-# Apply configuration
-COPY desktop/sway/etc /etc
-COPY desktop/sway/usr /usr
 
-RUN <<EOF 
+RUN <<EOF
+  set -xeuo pipefail
+
   # Apply hardened firewall configuration
   # RUN firewall-offline-cmd --set-default-zone public
   firewall-offline-cmd --remove-service ssh
