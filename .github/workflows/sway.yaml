@@ -1,4 +1,4 @@
-name: sway 41
+name: sway 42
 on:
   schedule:
     - cron: "5 8 * * 2"
@@ -22,7 +22,7 @@ jobs:
         shell: bash
         run: |
           TIMESTAMP="$(date +%Y%m%d)"
-          BUILD_TAGS=("latest" "41")
+          BUILD_TAGS=("latest" "42")
 
           # Add timestamp tag for version history
           BUILD_TAGS+=("${TIMESTAMP}")
@@ -43,7 +43,7 @@ jobs:
           attempt_delay: 15000
           command: |
             set -eo pipefail
-            ver=$(skopeo inspect docker://quay.io/fedora-ostree-desktops/sway-atomic:41 | jq -r '.Labels["org.opencontainers.image.version"]')
+            ver=$(skopeo inspect docker://quay.io/fedora-ostree-desktops/sway-atomic:42 | jq -r '.Labels["org.opencontainers.image.version"]')
             if [ -z "$ver" ] || [ "null" = "$ver" ]; then
               echo "inspected image version must not be empty or null"
               exit 1
