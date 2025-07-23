@@ -5,7 +5,7 @@ COPY desktop/sway/etc /etc
 COPY desktop/sway/usr /usr
 
 # Add rpmfusion repositories
-RUN <<EOF
+RUN <<'EOF'
   set -xeuo pipefail
   dnf5 -y install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
   dnf5 -y install https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
@@ -66,7 +66,7 @@ RUN <<EOF
 EOF
 
 
-RUN <<EOF
+RUN <<'EOF'
   set -xeuo pipefail
 
   systemctl enable tailscaled.service
