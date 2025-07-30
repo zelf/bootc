@@ -40,15 +40,12 @@ COPY toolbox/etc /etc
 
 RUN dnf copr enable atim/lazygit -y
 
-RUN dnf install -y \
-      neovim \
-      lazygit \
-      ddev && \
-    dnf clean all
+RUN npm install -g @anthropic-ai/claude-code
 
 # Cleanup
 RUN rm -rf /tmp/*
 
 RUN mkdir -p /usr/local/bin  && \
     ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/flatpak && \ 
-    ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/podman
+    ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/podman && \ 
+    ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/docker
