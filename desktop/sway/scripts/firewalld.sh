@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-set -xeuo pipefail
+set -euo pipefail
 firewall-offline-cmd --remove-service ssh

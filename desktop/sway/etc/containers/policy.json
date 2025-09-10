@@ -14,17 +14,12 @@
                         "type": "matchRepository"
                     }
                 }
-            ],
-            "": [
-                {
-                    "type": "insecureAcceptAnything"
-                }
             ]
         },
         "docker-daemon": {
             "": [
                 {
-                    "type": "insecureAcceptAnything"
+                    "type": "reject"
                 }
             ]
         }
