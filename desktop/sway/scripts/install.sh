@@ -31,9 +31,6 @@ dnf5 -y install \
   tlp \
   tlp-rdw
 
-# Failed to resolve the transaction:
-# Problem: conflicting requests
-#   - package rocm-opencl-6.2.1-2.fc41.x86_64 from updates-archive requires ocl-icd(x86-64), but none of the providers can be installed
 dnf5 -y swap OpenCL-ICD-Loader ocl-icd
 dnf5 -y install \
   rocminfo \
@@ -53,5 +50,5 @@ rpm -e firefox firefox-langpacks
 # Remove unneeded packages (currently doesn't actually reduce space, but reduces clutter)
 dnf5 -y autoremove
 dnf5 -y clean all
-
-rm -rf /var/cache/dnf /var/lib/dnf /var/log/*
+rm -rf /var/cache/dnf /var/lib/dnf
+find /var/log -type f -delete
