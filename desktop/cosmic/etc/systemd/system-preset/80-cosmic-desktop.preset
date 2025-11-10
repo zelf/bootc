@@ -1,0 +1,30 @@
+# Systemd preset file for COSMIC Desktop bootc image
+# This file defines which services should be enabled/disabled by default
+#
+# Syntax:
+#   enable <service>   - Enable service by default
+#   disable <service>  - Disable service by default
+#
+# Lower numbered presets take precedence (e.g., 80 runs before 90)
+
+# ============================================================================
+# Network Services
+# ============================================================================
+
+# Enable Tailscale VPN/mesh networking
+enable tailscaled.service
+
+# ============================================================================
+# Power Management
+# ============================================================================
+
+# Enable tuned for automatic performance and power profile management
+enable tuned.service
+
+# ============================================================================
+# Container Management
+# ============================================================================
+
+# Enable automatic updates for containers with AutoUpdate=registry label
+enable podman-auto-update.service
+enable podman-auto-update.timer
