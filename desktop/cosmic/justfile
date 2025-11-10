@@ -118,6 +118,29 @@ format-check:
     @echo "Format checking..."
     @echo "No formatting checks configured yet"
 
+# Prepare a new release (updates changelog, creates tag)
+release VERSION:
+    @echo "Preparing release {{VERSION}}..."
+    @bash ./scripts/prepare-release.sh {{VERSION}}
+
+# Show unreleased changes for CHANGELOG
+changelog:
+    @echo "Changes since last release:"
+    @PREV_TAG=$(git tag --sort=-version:refname | grep -E "^(cosmic-v|v.*-cosmic)" | head -n 1); \
+    if [ -z "$PREV_TAG" ]; then \
+        echo "No previous release found"; \
+        git log --pretty=format:"- %s (%h)" --no-merges -- .; \
+    else \
+        echo "Since: $PREV_TAG"; \
+        git log ${PREV_TAG}..HEAD --pretty=format:"- %s (%h)" --no-merges -- .; \
+    fi
+
+# Show release history
+releases:
+    @echo "Release History:"
+    @echo "================"
+    @git tag --sort=-version:refname | grep -E "^(cosmic-v|v.*-cosmic)" || echo "No releases yet"
+
 # Help text
 help:
     @echo "COSMIC Desktop Bootc Image - Build Commands"
@@ -130,5 +153,10 @@ help:
     @echo "  just shell          - Interactive shell"
     @echo "  just clean          - Remove built images"
     @echo "  just rebuild        - Full clean rebuild"
+    @echo ""
+    @echo "Release commands:"
+    @echo "  just release 1.0.0  - Prepare new release"
+    @echo "  just changelog      - Show unreleased changes"
+    @echo "  just releases       - Show release history"
     @echo ""
     @echo "For all commands, run: just --list"

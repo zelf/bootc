@@ -320,10 +320,67 @@ Ensure the public key is valid and matches your signing key:
 cat /etc/pki/containers/zelf.pub
 ```
 
+## Releases
+
+### Versioned Releases
+
+This project uses semantic versioning. Releases are automatically created via GitHub Actions when a version tag is pushed.
+
+#### Creating a Release
+
+```bash
+# Using justfile (recommended)
+just release 1.0.0
+
+# This will:
+# - Update CHANGELOG.md (interactive)
+# - Create git tag cosmic-v1.0.0
+# - Push tag to trigger release workflow
+```
+
+#### Release Workflow
+
+When a tag is pushed, GitHub Actions will:
+1. Build the COSMIC Desktop image
+2. Run comprehensive validation tests
+3. Perform security scanning with Trivy
+4. Generate SBOM (Software Bill of Materials)
+5. Push to `ghcr.io/zelf/cosmic:VERSION`
+6. Sign the image with Sigstore
+7. Create GitHub Release with changelog
+8. Attach SBOM and security scan results
+
+#### View Releases
+
+```bash
+# Show release history
+just releases
+
+# View unreleased changes for next release
+just changelog
+```
+
+#### Using Released Images
+
+```bash
+# Pull specific version
+podman pull ghcr.io/zelf/cosmic:1.0.0
+
+# Install specific version
+sudo bootc install --image ghcr.io/zelf/cosmic:1.0.0
+```
+
+### Continuous Builds
+
+- **`latest` tag**: Updated weekly (Tuesday 8:05 AM UTC)
+- **`42` tag**: Fedora 42 base, updated weekly
+- **`YYYYMMDD` tag**: Timestamp of build for tracking
+
 ## Project Documentation
 
 - **[README.md](README.md)** (this file) - Overview, building, and usage
 - **[DESIGN.md](DESIGN.md)** - Design decisions and architecture rationale
+- **[CHANGELOG.md](CHANGELOG.md)** - Version history and release notes
 - **[todo.md](todo.md)** - Implementation tracking, completed features, and roadmap
 - **[justfile](justfile)** - Build automation commands (run `just --list` to see all)
 

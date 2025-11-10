@@ -13,12 +13,14 @@ on:
 
 jobs:
   build:
-    name: Build cosmic
+    name: Build and Test COSMIC
     runs-on: ubuntu-24.04
     permissions:
       contents: read
       packages: write
       id-token: write
+      security-events: write  # For uploading security scan results
+      actions: read           # For reading workflow artifacts
 
     steps:
       - name: Checkout repository
@@ -66,8 +68,16 @@ jobs:
             org.opencontainers.image.title=cosmic
             org.opencontainers.image.version=${{ env.SOURCE_IMAGE_VERSION }}
             org.opencontainers.image.description=Custom COSMIC Desktop bootc image for AMD x86_64 with ROCm support, multimedia, and developer tools
+            org.opencontainers.image.source=https://github.com/zelf/bootc
+            org.opencontainers.image.url=https://github.com/zelf/bootc
+            org.opencontainers.image.documentation=https://github.com/zelf/bootc/blob/main/desktop/cosmic/README.md
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.created=${{ github.event.repository.updated_at }}
             io.artifacthub.package.readme-url=https://raw.githubusercontent.com/zelf/bootc/main/desktop/cosmic/README.md
             io.artifacthub.package.logo-url=https://avatars.githubusercontent.com/u/989504?v=4
+            com.github.build.number=${{ github.run_number }}
+            com.github.build.id=${{ github.run_id }}
+            com.github.workflow=${{ github.workflow }}
 
       - name: Build Image
         id: build_image
@@ -84,6 +94,53 @@ jobs:
       - name: Validate bootc image
         run: |
           podman run --rm ${{ steps.build_image.outputs.image }}:${{ env.DEFAULT_TAG }} bootc container lint
+
+      # Run comprehensive validation tests
+      - name: Run validation tests
+        run: |
+          chmod +x ./desktop/cosmic/scripts/validate.sh
+          ./desktop/cosmic/scripts/validate.sh ${{ steps.build_image.outputs.image }}:${{ env.DEFAULT_TAG }}
+
+      # Security scanning with Trivy
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ steps.build_image.outputs.image }}:${{ env.DEFAULT_TAG }}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload Trivy results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      # Generate SBOM (Software Bill of Materials)
+      - name: Generate SBOM
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ steps.build_image.outputs.image }}:${{ env.DEFAULT_TAG }}
+          format: 'cyclonedx'
+          output: 'sbom.json'
+
+      - name: Upload SBOM as artifact
+        uses: actions/upload-artifact@v4
+        if: github.event_name != 'pull_request'
+        with:
+          name: sbom-cosmic-${{ steps.generate-tags.outputs.alias_tags }}
+          path: sbom.json
+          retention-days: 90
+
+      # Check image size
+      - name: Check image size
+        run: |
+          SIZE=$(podman image inspect ${{ steps.build_image.outputs.image }}:${{ env.DEFAULT_TAG }} --format '{{.Size}}')
+          SIZE_GB=$((SIZE / 1024 / 1024 / 1024))
+          echo "Image size: ${SIZE_GB}GB"
+          if [ "$SIZE_GB" -gt 10 ]; then
+            echo "::warning::Image size is ${SIZE_GB}GB, which is larger than 10GB"
+          fi
 
       - name: Login to GitHub Container Registry
         if: github.event_name != 'pull_request'
@@ -120,6 +177,68 @@ jobs:
           COSIGN_EXPERIMENTAL: false
           COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
 
-      - name: Echo outputs
+      # Generate build summary
+      - name: Generate build summary
+        if: always()
         run: |
-          echo "${{ toJSON(steps.push.outputs) }}"
+          echo "## COSMIC Desktop Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Build Information" >> $GITHUB_STEP_SUMMARY
+          echo "- **Image**: \`${{ steps.build_image.outputs.image }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tags**: \`${{ steps.generate-tags.outputs.alias_tags }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Base Version**: \`${{ env.SOURCE_IMAGE_VERSION }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build Number**: \`${{ github.run_number }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Add image size
+          SIZE=$(podman image inspect ${{ steps.build_image.outputs.image }}:${{ env.DEFAULT_TAG }} --format '{{.Size}}')
+          SIZE_GB=$((SIZE / 1024 / 1024 / 1024))
+          echo "### Image Metrics" >> $GITHUB_STEP_SUMMARY
+          echo "- **Size**: ${SIZE_GB}GB" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ github.event_name }}" != "pull_request" ]; then
+            echo "### Registry" >> $GITHUB_STEP_SUMMARY
+            echo "- **Registry**: ghcr.io" >> $GITHUB_STEP_SUMMARY
+            echo "- **Pull Command**: \`podman pull ghcr.io/zelf/cosmic:latest\`" >> $GITHUB_STEP_SUMMARY
+            echo "- **Digest**: \`${{ steps.push.outputs.outputs && fromJSON(steps.push.outputs.outputs).digest }}\`" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      # Comment on PR with build results
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const size = await exec.getExecOutput('podman', [
+              'image', 'inspect',
+              '${{ steps.build_image.outputs.image }}:${{ env.DEFAULT_TAG }}',
+              '--format', '{{.Size}}'
+            ]);
+            const sizeGB = Math.round(parseInt(size.stdout.trim()) / 1024 / 1024 / 1024);
+
+            const comment = `## ✅ COSMIC Desktop Build Successful
+
+            ### Build Information
+            - **Image**: \`${{ steps.build_image.outputs.image }}\`
+            - **Tags**: \`${{ steps.generate-tags.outputs.alias_tags }}\`
+            - **Size**: ${sizeGB}GB
+            - **Base Version**: \`${{ env.SOURCE_IMAGE_VERSION }}\`
+
+            ### Validation
+            - ✅ Bootc container lint passed
+            - ✅ Comprehensive validation tests passed
+            - ✅ Security scanning completed
+
+            ### Next Steps
+            This is a PR build - image was not pushed to registry.
+            Merge to trigger a full build with push and signing.
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
