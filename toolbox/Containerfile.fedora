@@ -8,7 +8,7 @@ LABEL com.github.containers.toolbox="true" \
 COPY ./toolbox/packages.fedora /tmp/toolbox-packages
 
 RUN dnf -y upgrade && \
-    dnf -y install $(<tmp/toolbox-packages) && \
+    dnf -y install $(</tmp/toolbox-packages) && \
     dnf clean all
 
 # Set up dependencies
@@ -36,9 +36,9 @@ RUN dnf install -y \
     dnf swap -y mesa-vdpau-drivers mesa-vdpau-drivers-freeworld && \
     dnf clean all
 
-COPY toolbox/etc /etc
-
-RUN dnf copr enable atim/lazygit -y
+RUN dnf copr enable atim/lazygit -y && \
+    dnf install -y lazygit && \
+    dnf clean all
 
 RUN npm install -g @anthropic-ai/claude-code
 

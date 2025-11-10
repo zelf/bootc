@@ -1,5 +1,0 @@
-[ddev]
-name=ddev
-baseurl=https://pkg.ddev.com/yum/
-gpgcheck=0
-enabled=1
