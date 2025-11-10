@@ -9,6 +9,8 @@ RUN bash /usr/local/bin/install.sh && \
     bash /usr/local/bin/systemd.sh && \
     ostree container commit && \
     bash /usr/local/bin/firewalld.sh && \
+    ostree container commit && \
+    bash /usr/local/bin/cosmic-setup.sh && \
     ostree container commit
 
 RUN bootc container lint

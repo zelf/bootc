@@ -1,0 +1,134 @@
+# Justfile for COSMIC Desktop bootc image
+# https://github.com/casey/just
+
+# Default recipe (list available commands)
+default:
+    @just --list
+
+# Build the COSMIC Desktop bootc image
+build:
+    @echo "Building COSMIC Desktop bootc image..."
+    cd ../.. && podman build -t ghcr.io/zelf/cosmic:latest -f desktop/cosmic/Containerfile .
+
+# Build without cache (clean build)
+build-no-cache:
+    @echo "Building COSMIC Desktop bootc image (no cache)..."
+    cd ../.. && podman build --no-cache -t ghcr.io/zelf/cosmic:latest -f desktop/cosmic/Containerfile .
+
+# Run bootc container lint validation
+lint:
+    @echo "Running bootc container lint..."
+    podman run --rm ghcr.io/zelf/cosmic:latest bootc container lint
+
+# Run validation tests
+test: lint
+    @echo "Running validation tests..."
+    @bash ./scripts/validate.sh ghcr.io/zelf/cosmic:latest
+
+# Build and test in one command
+validate: build test
+    @echo "Build and validation complete!"
+
+# Run interactive shell in the built image
+shell:
+    @echo "Starting interactive shell in COSMIC image..."
+    podman run --rm -it ghcr.io/zelf/cosmic:latest /bin/bash
+
+# Inspect image metadata
+inspect:
+    @echo "Inspecting COSMIC image metadata..."
+    podman inspect ghcr.io/zelf/cosmic:latest | jq '.[0] | {Id: .Id, Created: .Created, Size: .Size, Labels: .Config.Labels}'
+
+# Show ostree commits in the image
+ostree-log:
+    @echo "Showing ostree commits..."
+    podman run --rm ghcr.io/zelf/cosmic:latest ostree log fedora/stable/x86_64/cosmic || echo "No ostree commits found"
+
+# List installed packages in the image
+packages:
+    @echo "Listing installed packages..."
+    podman run --rm ghcr.io/zelf/cosmic:latest rpm -qa | sort
+
+# Clean up built images
+clean:
+    @echo "Cleaning up COSMIC images..."
+    podman rmi ghcr.io/zelf/cosmic:latest || true
+    podman image prune -f
+
+# Clean all (including build cache)
+clean-all: clean
+    @echo "Cleaning build cache..."
+    podman system prune -af
+
+# Push image to registry (manual - CI handles automatic pushes)
+push:
+    @echo "Pushing COSMIC image to registry..."
+    podman push ghcr.io/zelf/cosmic:latest
+
+# Pull base image to ensure latest
+pull-base:
+    @echo "Pulling latest base image..."
+    podman pull quay.io/fedora/fedora-bootc:42
+
+# Full rebuild: pull base, clean build, test
+rebuild: pull-base clean build-no-cache test
+    @echo "Full rebuild complete!"
+
+# Check for image updates
+check-updates:
+    @echo "Checking for base image updates..."
+    @echo "Current base image:"
+    @podman images quay.io/fedora/fedora-bootc:42 --format "{{.ID}} {{.Created}}"
+    @echo "\nLatest available:"
+    @skopeo inspect docker://quay.io/fedora/fedora-bootc:42 | jq -r '"\(.Digest) \(.Created)"'
+
+# Show image size
+size:
+    @echo "COSMIC image size:"
+    @podman images ghcr.io/zelf/cosmic:latest --format "{{.Size}}"
+
+# Compare with base image size
+size-compare:
+    @echo "Base image size:"
+    @podman images quay.io/fedora/fedora-bootc:42 --format "{{.Size}}" || echo "Base image not found locally"
+    @echo "\nCOSMIC image size:"
+    @podman images ghcr.io/zelf/cosmic:latest --format "{{.Size}}" || echo "COSMIC image not found"
+
+# Show build context
+info:
+    @echo "Build Information:"
+    @echo "=================="
+    @echo "Image: ghcr.io/zelf/cosmic:latest"
+    @echo "Base: quay.io/fedora/fedora-bootc:42"
+    @echo "Platform: AMD x86_64"
+    @echo "Containerfile: desktop/cosmic/Containerfile"
+    @echo ""
+    @echo "Configuration:"
+    @echo "  Scripts: desktop/cosmic/scripts/"
+    @echo "  Configs: desktop/cosmic/etc/"
+    @echo "  Docs: desktop/cosmic/README.md"
+
+# Run shellcheck on all scripts
+shellcheck:
+    @echo "Running shellcheck on scripts..."
+    @shellcheck ./scripts/*.sh || echo "shellcheck not installed, skipping"
+
+# Format check (placeholder for future YAML linting)
+format-check:
+    @echo "Format checking..."
+    @echo "No formatting checks configured yet"
+
+# Help text
+help:
+    @echo "COSMIC Desktop Bootc Image - Build Commands"
+    @echo "==========================================="
+    @echo ""
+    @echo "Common commands:"
+    @echo "  just build          - Build the image"
+    @echo "  just test           - Run validation tests"
+    @echo "  just validate       - Build and test"
+    @echo "  just shell          - Interactive shell"
+    @echo "  just clean          - Remove built images"
+    @echo "  just rebuild        - Full clean rebuild"
+    @echo ""
+    @echo "For all commands, run: just --list"

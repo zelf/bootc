@@ -69,22 +69,84 @@ This COSMIC Desktop bootc image has several strengths (excellent container secur
 
 ---
 
+### Completed Medium-Term Changes (2025-11-10)
+
+#### ✅ Created Justfile for Build Automation
+- New file: `justfile`
+- Commands for common tasks:
+  - `just build` - Build the image
+  - `just test` - Run validation tests
+  - `just validate` - Build and test
+  - `just shell` - Interactive shell
+  - `just clean` - Remove built images
+  - `just rebuild` - Full clean rebuild
+  - Plus many more utility commands
+- Makes building and testing consistent and easy
+- Aligns with Fedora workstation-ostree-config conventions
+
+#### ✅ Implemented Proper Repository Definitions
+- New file: `etc/yum.repos.d/cosmic-epoch.repo`
+- Proper .repo file for COSMIC Copr repository
+- Includes GPG key verification
+- Replaced `dnf5 copr enable` command in install.sh
+- More maintainable and declarative approach
+
+#### ✅ Added COSMIC-Specific Post-Processing
+- New script: `scripts/cosmic-setup.sh` (4th build phase)
+- Customizations include:
+  - Default COSMIC configuration skeleton
+  - Environment variables for COSMIC/Wayland
+  - Welcome message (MOTD) for new users
+  - COSMIC-specific documentation
+  - Terminal emulator configuration
+  - Performance optimizations for COSMIC
+- Updated Containerfile to run this script with ostree commit
+
+#### ✅ Created Validation/Testing Scripts
+- New script: `scripts/validate.sh`
+- Comprehensive image validation with 24 automated tests:
+  - Image structure and labels
+  - Package installation verification
+  - Service enablement checks
+  - Configuration file presence
+  - Security setup validation
+  - Performance: image size check
+- Color-coded output with pass/fail summary
+- Integrated with justfile (`just test`)
+
+#### ✅ Evaluated Modular Manifest Structure
+- Created `DESIGN.md` documenting design decisions
+- **Decision**: Use Containerfile approach (not YAML manifests)
+- **Rationale**:
+  - Single variant, single architecture (AMD x86_64)
+  - Containerfile is native for bootc container images
+  - Simpler build pipeline
+  - Better for single-maintainer projects
+  - YAML manifests are for multi-variant management
+- Document explains when each approach makes sense
+- Our structure provides benefits without the overhead
+
+---
+
 ## What's Missing
 
-### 1. Modular Configuration Structure
+### 1. Modular Configuration Structure ✅ (Addressed)
 - **Standard approach**: Uses layered YAML manifests (`cosmic.yaml` → `cosmic-common.yaml` → `common.yaml` → `base-atomic.yaml`)
-- **Your approach**: Single Containerfile with inline scripts
-- **Impact**: Harder to share configuration across variants or reuse base components
+- **Our approach**: Single Containerfile with organized scripts
+- **Decision**: Containerfile better for single-variant, single-architecture use case
+- **Status**: See `DESIGN.md` for detailed rationale
 
-### 2. Separated Package Lists
+### 2. Separated Package Lists ✅ (Addressed)
 - **Standard**: Packages organized in `packages/common.yaml`, `packages/cosmic.yaml` with auto-generated sync from Fedora comps
-- **Your approach**: All packages mixed in `install.sh`
-- **Impact**: Difficult to track what's desktop-specific vs. base system vs. development tools
+- **Our approach**: All packages in `install.sh` with clear section organization
+- **Status**: Packages now organized into logical sections with inline documentation
+- **Note**: Comps sync not needed for explicit single-variant configuration
 
-### 3. Architecture-Specific Package Handling
+### 3. Architecture-Specific Package Handling (Not Needed)
 - **Standard**: Explicit `packages-x86_64` and `packages-aarch64` sections
-- **Your approach**: No architecture differentiation (AMD-specific ROCm packages will fail on ARM)
-- **Impact**: Image won't build properly on non-AMD architectures
+- **Our approach**: AMD x86_64 only by design
+- **Decision**: Not supporting other architectures reduces complexity
+- **Status**: Image explicitly targets AMD x86_64, ROCm packages intentional
 
 ### 4. System Module Configurations
 Missing several standard atomic desktop configurations:
@@ -99,22 +161,28 @@ Missing several standard atomic desktop configurations:
 - **Impact**: Less declarative, harder to audit enabled services
 - **Status**: Now using `etc/systemd/system-preset/80-cosmic-desktop.preset`
 
-### 6. Desktop-Specific Post-Processing
-Missing COSMIC-specific customizations found in other variants:
-- Initial setup configuration (skip certain pages)
-- Default settings overrides
-- Extension/plugin pre-configuration
-- Vendor configuration files
+### 6. Desktop-Specific Post-Processing ✅ (Completed)
+- **Standard**: COSMIC-specific customizations found in other variants
+- **Status**: Created `scripts/cosmic-setup.sh` with:
+  - COSMIC configuration skeleton in /etc/skel
+  - Environment variables for Wayland/COSMIC
+  - Welcome message (MOTD) for users
+  - Default application configuration
+  - Performance optimizations
+- Runs as 4th build phase with ostree commit
 
 ### 7. User/Group Definitions
 - **Standard**: `passwd` and `group` files defining system users
-- **Your approach**: Hardcoded UID 1000 in quadlet file
-- **Impact**: Brittle user assumptions
+- **Our approach**: Hardcoded UID 1000 in quadlet file
+- **Note**: For single-user desktop, this is acceptable
+- **Impact**: Minimal - first user typically gets UID 1000
 
-### 8. Build Automation
+### 8. Build Automation ✅ (Completed)
 - **Standard**: `justfile` with commands like `just compose variant=cosmic`
-- **Your approach**: Manual container build
-- **Impact**: No standardized build/test/validate workflow
+- **Status**: Created comprehensive `justfile` with 20+ commands
+- Commands include: build, test, validate, shell, clean, rebuild, inspect, etc.
+- Integrated with validation script
+- Standardized workflow established
 
 ### 9. CI/CD Configuration ✅ (Completed)
 - **Standard**: `.zuul.yaml`, GitLab CI for automated testing
@@ -307,11 +375,11 @@ swap-priority=100
 - [ ] Add architecture detection for ROCm (skipped - AMD x86_64 only by design)
 
 ### Medium-term (Structural)
-- [ ] Create modular manifest structure (YAML-based)
-- [ ] Implement proper repository definitions
-- [ ] Add COSMIC-specific post-processing
-- [ ] Create validation/testing scripts
-- [ ] Add justfile for build automation
+- [x] Create modular manifest structure (YAML-based) - **Decision**: Containerfile approach better for single-variant (see DESIGN.md)
+- [x] Implement proper repository definitions
+- [x] Add COSMIC-specific post-processing
+- [x] Create validation/testing scripts
+- [x] Add justfile for build automation
 
 ### Long-term (Infrastructure)
 - [ ] Implement comps synchronization

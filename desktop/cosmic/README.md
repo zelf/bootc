@@ -23,20 +23,38 @@ This image is specifically designed and tested for AMD x86_64 systems. The ROCm 
 ### Prerequisites
 - Podman or Docker
 - AMD x86_64 system (for local testing)
+- `just` command runner (optional, but recommended)
 
-### Build Command
+### Quick Start with Justfile
+
+The easiest way to build and test:
 
 ```bash
 cd /home/zelf/projects/bootc/desktop/cosmic
-podman build -t cosmic-desktop:latest .
+
+# Build the image
+just build
+
+# Build and run all validation tests
+just validate
+
+# See all available commands
+just --list
+```
+
+### Manual Build Command
+
+```bash
+cd /home/zelf/projects/bootc
+podman build -t ghcr.io/zelf/cosmic:latest -f desktop/cosmic/Containerfile .
 ```
 
 ### Build Process
 
-The build follows a three-phase approach with ostree commits after each phase:
+The build follows a four-phase approach with ostree commits after each phase:
 
 1. **Package Installation** (`install.sh`)
-   - Adds COSMIC Desktop repository
+   - Installs COSMIC Desktop from Copr repository
    - Installs desktop environment, multimedia, and development tools
    - Configures AMD ROCm GPU support
    - Adds RPM Fusion repositories
@@ -47,6 +65,11 @@ The build follows a three-phase approach with ostree commits after each phase:
 
 3. **Firewall Hardening** (`firewalld.sh`)
    - Removes SSH from firewall (security hardening)
+
+4. **COSMIC Customization** (`cosmic-setup.sh`)
+   - Sets up COSMIC-specific defaults
+   - Configures environment variables for Wayland
+   - Creates welcome message and documentation
 
 ## Features
 
@@ -88,15 +111,23 @@ See `etc/systemd/zram-generator.conf` and `etc/sysctl.d/`.
 ```
 desktop/cosmic/
 ├── Containerfile                    # Main build definition
+├── justfile                         # Build automation commands
+├── README.md                        # This file
+├── DESIGN.md                        # Design decisions and rationale
+├── todo.md                          # Implementation tracking and roadmap
 ├── scripts/                         # Build-time installation scripts
 │   ├── install.sh                  # Package installation (phase 1)
 │   ├── systemd.sh                  # Service configuration (phase 2)
-│   └── firewalld.sh                # Firewall hardening (phase 3)
+│   ├── firewalld.sh                # Firewall hardening (phase 3)
+│   ├── cosmic-setup.sh             # COSMIC customization (phase 4)
+│   └── validate.sh                 # Image validation tests
 ├── etc/                            # System configuration overlay
 │   ├── containers/                 # Container security and Quadlet configs
 │   ├── dnf/                        # Package manager configuration
 │   ├── sysctl.d/                   # Kernel parameter tuning
 │   ├── systemd/                    # ZRAM and service configs
+│   │   └── system-preset/         # Systemd preset files
+│   ├── yum.repos.d/                # Repository definitions
 │   ├── polkit-1/                   # PolicyKit rules
 │   ├── profile.d/                  # Shell environment
 │   └── udev/                       # Hardware rules
@@ -172,17 +203,42 @@ User-specific configurations can be added to:
 
 ## Testing
 
-After building, test the image:
+### Automated Validation
+
+The image includes comprehensive validation tests:
+
+```bash
+# Run all validation tests (24 automated checks)
+just test
+
+# Or run directly
+./scripts/validate.sh ghcr.io/zelf/cosmic:latest
+```
+
+The validation script checks:
+- Image structure and bootc labels
+- Package installation (COSMIC, ROCm, multimedia, etc.)
+- Service configuration
+- Security setup (signature verification, firewall)
+- Configuration files presence
+- Image size and performance
+
+### Manual Testing
 
 ```bash
 # Run bootc container lint
-podman run --rm cosmic-desktop:latest bootc container lint
+just lint
+# or: podman run --rm ghcr.io/zelf/cosmic:latest bootc container lint
 
-# Inspect the image
-podman run --rm -it cosmic-desktop:latest /bin/bash
+# Interactive shell in the image
+just shell
+# or: podman run --rm -it ghcr.io/zelf/cosmic:latest /bin/bash
 
 # Check ostree commits
-podman run --rm cosmic-desktop:latest ostree log fedora/stable/x86_64/cosmic
+podman run --rm ghcr.io/zelf/cosmic:latest ostree log fedora/stable/x86_64/cosmic
+
+# Inspect image metadata
+just inspect
 ```
 
 ## Deployment
@@ -220,8 +276,20 @@ The COSMIC Desktop packages come from the ryanabx/cosmic-epoch Copr repository. 
 The base image is `quay.io/fedora/fedora-bootc:42`. Rebuild regularly to pull updates:
 
 ```bash
+# Using justfile (recommended)
+just rebuild
+
+# Or manually
 podman pull quay.io/fedora/fedora-bootc:42
-podman build --no-cache -t cosmic-desktop:latest .
+cd /home/zelf/projects/bootc
+podman build --no-cache -t ghcr.io/zelf/cosmic:latest -f desktop/cosmic/Containerfile .
+```
+
+### Check for Updates
+
+```bash
+# Check if base image has updates
+just check-updates
 ```
 
 ## Troubleshooting
@@ -252,6 +320,13 @@ Ensure the public key is valid and matches your signing key:
 cat /etc/pki/containers/zelf.pub
 ```
 
+## Project Documentation
+
+- **[README.md](README.md)** (this file) - Overview, building, and usage
+- **[DESIGN.md](DESIGN.md)** - Design decisions and architecture rationale
+- **[todo.md](todo.md)** - Implementation tracking, completed features, and roadmap
+- **[justfile](justfile)** - Build automation commands (run `just --list` to see all)
+
 ## License
 
 This configuration is provided as-is. Individual components have their own licenses.
@@ -262,3 +337,4 @@ This configuration is provided as-is. Individual components have their own licen
 - [COSMIC Desktop](https://github.com/pop-os/cosmic-epoch)
 - [Workstation OSTree Config](https://pagure.io/workstation-ostree-config)
 - [ROCm Documentation](https://rocm.docs.amd.com/)
+- [Just Command Runner](https://github.com/casey/just)

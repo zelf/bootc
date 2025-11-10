@@ -16,9 +16,7 @@ set -euo pipefail
 # ============================================================================
 # COSMIC Desktop Environment
 # ============================================================================
-
-# Add COSMIC Copr repository
-dnf5 -y copr enable ryanabx/cosmic-epoch
+# Note: COSMIC Copr repository is pre-configured via /etc/yum.repos.d/cosmic-epoch.repo
 
 # Install COSMIC desktop
 dnf5 -y install cosmic-desktop
