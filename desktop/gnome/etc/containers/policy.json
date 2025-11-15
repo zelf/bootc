@@ -14,6 +14,15 @@
                         "type": "matchRepository"
                     }
                 }
+            ],
+            "registry.inconnu-vibe.ts.net": [
+                {
+                    "type": "sigstoreSigned",
+                    "keyPath": "/etc/pki/containers/zelf.pub",
+                    "signedIdentity": {
+                        "type": "matchRepository"
+                    }
+                }
             ]
         },
         "docker-daemon": {
