@@ -24,8 +24,6 @@ dnf5 -y install \
   tailscale \
   lm_sensors \
   podman-compose \
-  webkit2gtk3 \
-  libusb \
   steam-devices \
   osbuild-selinux
 
