@@ -12,6 +12,7 @@ dnf5 -y swap mesa-va-drivers mesa-va-drivers-freeworld
 dnf5 -y swap mesa-vdpau-drivers mesa-vdpau-drivers-freeworld
 dnf5 -y install \
   android-tools \
+  fuse \
   vim \
   bat \
   btop \
@@ -47,4 +48,5 @@ rpm -e firefox firefox-langpacks
 dnf5 -y autoremove
 dnf5 -y clean all
 rm -rf /var/cache/dnf /var/lib/dnf
+rm -f /etc/xdg/autostart/org.gnome.Software.desktop
 find /var/log -type f -delete
