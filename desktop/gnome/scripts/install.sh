@@ -13,6 +13,7 @@ dnf5 -y swap mesa-vdpau-drivers mesa-vdpau-drivers-freeworld
 dnf5 -y install \
   android-tools \
   fuse \
+  fuse-overlayfs \
   vim \
   bat \
   btop \
