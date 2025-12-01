@@ -46,6 +46,7 @@ pam
 passwd
 pigz
 pinentry
+podman-compose
 procps-ng
 ripgrep
 rsync
