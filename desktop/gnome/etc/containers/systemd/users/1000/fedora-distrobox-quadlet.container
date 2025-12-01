@@ -41,3 +41,9 @@ Volume=/etc/resolv.conf:/etc/resolv.conf:ro
 
 [Install]
 WantedBy=default.target
+
+[Service]
+Restart=on-failure
+RestartSec=10s
+StartLimitIntervalSec=300
+StartLimitBurst=5
