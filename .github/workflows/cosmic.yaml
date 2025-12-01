@@ -1,8 +1,5 @@
 name: cosmic 42
 on:
-  # Run weekly on Tuesday at 8:05 AM UTC
-  schedule:
-    - cron: "5 8 * * 2"
   # Allow manual trigger from GitHub UI
   workflow_dispatch:
   # Run on pull requests that modify cosmic desktop files (build only, no push)
