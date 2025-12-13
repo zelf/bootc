@@ -38,7 +38,7 @@ jobs:
       - name: Normalize image reference
         id: image_ref
         run: |
-          IMAGE_PATH="${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_REPOSITORY }}"
+          IMAGE_PATH="${{ env.IMAGE_REPOSITORY }}"
           echo "image=${IMAGE_PATH,,}" >> "$GITHUB_OUTPUT"
 
       - name: Image Metadata
@@ -46,7 +46,7 @@ jobs:
         id: meta
         with:
           images: |
-            ${{ steps.image_ref.outputs.image }}
+            ${{ env.IMAGE_REGISTRY }}/${{ steps.image_ref.outputs.image }}
           labels: |
             io.artifacthub.package.readme-url=https://raw.githubusercontent.com/zelf/bootc/main/README.md
             org.opencontainers.image.version=${{ env.FEDORA_VERSION }}
@@ -80,6 +80,7 @@ jobs:
           REGISTRY_USER: ${{ github.actor }}
           REGISTRY_PASSWORD: ${{ github.token }}
         with:
+          registry: ${{ env.IMAGE_REGISTRY }}
           image: ${{ steps.build_image.outputs.image }}
           tags: ${{ steps.build_image.outputs.tags }}
           username: ${{ env.REGISTRY_USER }}
@@ -101,7 +102,7 @@ jobs:
       - name: Sign container image
         if: github.event_name != 'pull_request'
         run: |
-          cosign sign -y --key env://COSIGN_PRIVATE_KEY ${{ steps.build_image.outputs.image }}@${TAGS}
+          cosign sign -y --key env://COSIGN_PRIVATE_KEY ${{ env.IMAGE_REGISTRY }}/${{ steps.build_image.outputs.image }}@${TAGS}
         env:
           TAGS: ${{ steps.push.outputs.digest }}
           COSIGN_EXPERIMENTAL: false
