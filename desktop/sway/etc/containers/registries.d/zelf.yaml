@@ -1,3 +1,0 @@
-docker:
-  ghcr.io/zelf:
-    use-sigstore-attachments: true
