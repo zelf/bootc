@@ -1,15 +1,16 @@
 name: Build and Push Fedora Toolbox Image
 on:
   schedule:
-    - cron: "20 22 * * 1" # 10:20pm everyday
+    - cron: "20 22 * * 1" # Weekly on Monday at 10:20pm UTC
   pull_request:
   merge_group:
   workflow_dispatch:
+
 env:
   IMAGE_NAME: fedora-toolbox
-  IMAGE_TAGS: latest
   IMAGE_REGISTRY: ghcr.io
   IMAGE_REPOSITORY: ${{ github.repository_owner }}/fedora-toolbox
+  FEDORA_VERSION: "43"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
@@ -23,17 +24,16 @@ jobs:
       contents: read
       packages: write
       id-token: write
-    strategy:
-      fail-fast: false
     steps:
-      # Checkout push-to-registry action GitHub repository
-      - name: Checkout Push to Registry action
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Verify Fedora distrobox
-        uses: EyeCantCU/cosign-action/verify@v0.3.0
-        with:
-          containers: fedora-distrobox:latest
+      - name: Generate tags
+        id: generate-tags
+        run: |
+          TIMESTAMP=$(date +%Y%m%d)
+          echo "timestamp=${TIMESTAMP}" >> "$GITHUB_OUTPUT"
+          echo "tags=latest ${{ env.FEDORA_VERSION }} ${TIMESTAMP}" >> "$GITHUB_OUTPUT"
 
       - name: Normalize image reference
         id: image_ref
@@ -41,7 +41,6 @@ jobs:
           IMAGE_PATH="${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_REPOSITORY }}"
           echo "image=${IMAGE_PATH,,}" >> "$GITHUB_OUTPUT"
 
-      # Build metadata
       - name: Image Metadata
         uses: docker/metadata-action@v5
         id: meta
@@ -50,8 +49,8 @@ jobs:
             ${{ steps.image_ref.outputs.image }}
           labels: |
             io.artifacthub.package.readme-url=https://raw.githubusercontent.com/zelf/bootc/main/README.md
+            org.opencontainers.image.version=${{ env.FEDORA_VERSION }}
 
-      # Build image using Buildah action
       - name: Build Image
         id: build_image
         uses: redhat-actions/buildah-build@v2
@@ -59,11 +58,20 @@ jobs:
           containerfiles: |
             ./toolbox/Containerfile.fedora
           image: ${{ steps.image_ref.outputs.image }}
-          tags: ${{ env.IMAGE_TAGS }}
+          tags: ${{ steps.generate-tags.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           oci: false
 
-      # Push the image to GHCR (Image Registry)
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ steps.build_image.outputs.image }}:latest
+          format: table
+          exit-code: 0
+          ignore-unfixed: true
+          vuln-type: os,library
+          severity: CRITICAL,HIGH
+
       - name: Push To GHCR
         uses: redhat-actions/push-to-registry@v2
         if: github.event_name != 'pull_request'
@@ -79,6 +87,8 @@ jobs:
           password: ${{ env.REGISTRY_PASSWORD }}
           extra-args: |
             --compression-format=zstd:chunked
+            --retry=3
+            --retry-delay=15s
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -88,8 +98,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Sign container
-      - uses: sigstore/cosign-installer@v3.8.1
+      - uses: sigstore/cosign-installer@v3
         if: github.event_name != 'pull_request'
 
       - name: Sign container image
@@ -101,6 +110,12 @@ jobs:
           COSIGN_EXPERIMENTAL: false
           COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
 
-      - name: Echo outputs
+      - name: Build Summary
         run: |
-          echo "${{ toJSON(steps.push.outputs) }}"
+          echo "## Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "| Item | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Image | \`${{ steps.image_ref.outputs.image }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tags | \`${{ steps.generate-tags.outputs.tags }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Fedora Version | ${{ env.FEDORA_VERSION }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Timestamp | ${{ steps.generate-tags.outputs.timestamp }} |" >> $GITHUB_STEP_SUMMARY

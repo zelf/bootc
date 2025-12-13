@@ -1,35 +1,33 @@
-# stolen from https://github.com/ublue-os/toolboxes/blob/main/toolboxes/fedora-toolbox/Containerfile.fedora
-FROM registry.fedoraproject.org/fedora-toolbox:42 AS fedora-toolbox
+# Based on https://github.com/ublue-os/toolboxes
+FROM registry.fedoraproject.org/fedora-toolbox:43 AS fedora-toolbox
 
 LABEL com.github.containers.toolbox="true" \
       usage="This image is meant to be used with the toolbox or distrobox command" \
-      summary="A cloud-native terminal experience powered by Fedora" 
+      summary="A cloud-native terminal experience powered by Fedora"
 
 COPY ./toolbox/packages.fedora /tmp/toolbox-packages
 
+# Install packages, RPM Fusion, and freeworld drivers in single layer
 RUN dnf -y upgrade && \
     dnf -y install $(</tmp/toolbox-packages) && \
-    dnf clean all
-
-# Install RPMFusion for hardware accelerated encoding/decoding
-RUN dnf install -y \
-    "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm" \
-    "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm" && \
+    dnf install -y \
+        "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm" \
+        "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm" && \
     dnf swap -y mesa-va-drivers mesa-va-drivers-freeworld && \
     dnf swap -y mesa-vdpau-drivers mesa-vdpau-drivers-freeworld && \
-    dnf clean all
-
-RUN dnf copr enable atim/lazygit -y && \
+    dnf copr enable atim/lazygit -y && \
     dnf install -y lazygit && \
-    dnf clean all
+    dnf clean all && \
+    rm -rf /var/cache/dnf /tmp/*
 
-RUN npm install -g @anthropic-ai/claude-code
-RUN npm install -g @fission-ai/openspec@latest
+# Install npm global packages
+RUN npm install -g --no-fund \
+        @anthropic-ai/claude-code \
+        @fission-ai/openspec@latest && \
+    npm cache clean --force
 
-# Cleanup
-RUN rm -rf /tmp/*
-
-RUN mkdir -p /usr/local/bin  && \
-    ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/flatpak && \ 
-    ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/podman && \ 
+# Host integration symlinks for distrobox
+RUN mkdir -p /usr/local/bin && \
+    ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/flatpak && \
+    ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/podman && \
     ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/docker
