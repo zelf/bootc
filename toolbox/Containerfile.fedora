@@ -9,7 +9,7 @@ COPY ./toolbox/packages.fedora /tmp/toolbox-packages
 
 # Install packages, RPM Fusion, and freeworld drivers in single layer
 RUN dnf -y upgrade && \
-    dnf -y install $(</tmp/toolbox-packages) && \
+    dnf -y install $(grep -v '^#' /tmp/toolbox-packages | grep -v '^$') && \
     dnf install -y \
         "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm" \
         "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm" && \
