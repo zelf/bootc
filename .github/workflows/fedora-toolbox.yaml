@@ -67,11 +67,12 @@ jobs:
         id: push
         run: |
           podman push --compression-format=zstd:chunked \
+            --digestfile=/tmp/digest.txt \
             --creds=${{ github.actor }}:${{ github.token }} \
             ${{ steps.image_ref.outputs.image }}:latest \
             ${{ env.IMAGE_REGISTRY }}/${{ steps.image_ref.outputs.image }}:latest
 
-          DIGEST=$(podman inspect --format='{{.Digest}}' ${{ steps.image_ref.outputs.image }}:latest)
+          DIGEST=$(cat /tmp/digest.txt)
           echo "digest=${DIGEST}" >> "$GITHUB_OUTPUT"
 
           # Add additional tags via skopeo (no re-upload)
