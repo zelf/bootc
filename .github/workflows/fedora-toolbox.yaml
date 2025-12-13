@@ -62,16 +62,6 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           oci: false
 
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: localhost/${{ steps.build_image.outputs.image }}
-          format: table
-          exit-code: 0
-          ignore-unfixed: true
-          vuln-type: os,library
-          severity: CRITICAL,HIGH
-
       - name: Push To GHCR
         uses: redhat-actions/push-to-registry@v2
         if: github.event_name != 'pull_request'
