@@ -24,6 +24,7 @@ RUN dnf copr enable atim/lazygit -y && \
     dnf clean all
 
 RUN npm install -g @anthropic-ai/claude-code
+RUN npm install -g @fission-ai/openspec@latest
 
 # Cleanup
 RUN rm -rf /tmp/*
