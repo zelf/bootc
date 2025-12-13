@@ -12,6 +12,7 @@ diffutils
 distrobox
 dnf-plugins-core
 dnf5
+fd
 findutils
 fzf
 glibc-all-langpacks
