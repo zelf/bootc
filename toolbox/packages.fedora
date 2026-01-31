@@ -87,7 +87,12 @@ shadow-utils
 sudo
 
 # === Graphics & Drivers ===
+libXcursor
+libXi
+libXinerama
+libXrandr
 mesa-dri-drivers
+mesa-libGL
 mesa-vulkan-drivers
 vulkan
 
@@ -100,6 +105,10 @@ words
 # === Theming ===
 adw-gtk3-theme
 vte-profile
+
+# === Audio ===
+alsa-lib
+pulseaudio-libs
 
 # === Misc ===
 libguestfs-tools
