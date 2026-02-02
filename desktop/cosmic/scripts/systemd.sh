@@ -11,3 +11,7 @@ systemctl enable podman-auto-update.service podman-auto-update.timer
 chmod 700 /etc/containers/systemd
 
 systemctl disable NetworkManager-wait-online.service
+
+# Create plugdev group for ZSA keyboard support with user zelf as member
+groupadd -f plugdev
+sed -i 's/^plugdev:.*/&zelf/' /etc/group

@@ -7,7 +7,6 @@ dnf5 -y install --allowerasing ffmpeg
 dnf5 -y group install multimedia --setopt="install_weak_deps=False"
 dnf5 -y group install sound-and-video
 dnf5 -y swap noopenh264 openh264
-dnf5 -y install mozilla-openh264
 dnf5 -y swap mesa-va-drivers mesa-va-drivers-freeworld
 dnf5 -y swap mesa-vdpau-drivers mesa-vdpau-drivers-freeworld
 dnf5 -y install \
