@@ -1,0 +1,5 @@
+docker:
+  ghcr.io/zelf:
+    use-sigstore-attachments: true
+  registry.inconnu-vibe.ts.net:
+    use-sigstore-attachments: true
