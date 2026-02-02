@@ -1,4 +1,4 @@
-FROM ghcr.io/blue-build/base-images/fedora-cosmic:43
+FROM quay.io/fedora-ostree-desktops/cosmic-atomic:43
 
 COPY desktop/cosmic/etc /etc
 COPY desktop/cosmic/usr /usr
