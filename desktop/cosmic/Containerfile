@@ -1,0 +1,21 @@
+FROM ghcr.io/blue-build/base-images/fedora-cosmic:43
+
+COPY desktop/cosmic/etc /etc
+COPY desktop/cosmic/usr /usr
+COPY desktop/cosmic/scripts/*.sh /usr/local/bin/
+
+RUN bash /usr/local/bin/cleanup.sh && \
+    ostree container commit && \
+    bash /usr/local/bin/install.sh && \
+    ostree container commit && \
+    bash /usr/local/bin/systemd.sh && \
+    ostree container commit && \
+    bash /usr/local/bin/firewalld.sh && \
+    ostree container commit
+
+RUN bootc container lint
+
+LABEL containers.bootc="1" \
+      ostree.bootable="1"
+STOPSIGNAL SIGRTMIN+3
+CMD ["/sbin/init"]
