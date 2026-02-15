@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Remove Sway and unwanted packages from the base image (only those actually present)
-UNWANTED=(sway swaybg swaybar swayidle swaylock firefox firefox-langpacks foot toolbox)
+# Remove unwanted packages from the base image (only those actually present)
+UNWANTED=(firefox firefox-langpacks foot toolbox)
 TO_REMOVE=()
 for pkg in "${UNWANTED[@]}"; do
   if rpm -q "$pkg" &>/dev/null; then

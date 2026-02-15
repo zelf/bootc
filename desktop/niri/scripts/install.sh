@@ -13,16 +13,13 @@ dnf5 -y swap noopenh264 openh264
 dnf5 -y swap mesa-va-drivers mesa-va-drivers-freeworld
 dnf5 -y swap mesa-vdpau-drivers mesa-vdpau-drivers-freeworld
 
-# Niri and Wayland session tools
+# Niri and Wayland session tools (swaybg/swayidle/swaylock already in base image)
 dnf5 -y install \
   niri \
   xdg-desktop-portal-gtk \
   xdg-desktop-portal-gnome \
   waybar \
-  mako \
-  swaybg \
-  swayidle \
-  swaylock
+  mako
 
 # Common tools (same as cosmic/gnome)
 dnf5 -y install \
