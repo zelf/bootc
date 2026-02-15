@@ -22,7 +22,9 @@ dnf5 -y install \
   xdg-desktop-portal-gtk \
   xdg-desktop-portal-gnome \
   waybar \
-  mako
+  mako \
+  gnome-keyring \
+  system-config-printer
 
 # Common tools (same as cosmic/gnome)
 dnf5 -y install \
