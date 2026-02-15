@@ -2,6 +2,7 @@ FROM quay.io/fedora-ostree-desktops/cosmic-atomic:43
 
 COPY desktop/shared/etc /etc
 COPY desktop/shared/usr /usr
+COPY desktop/shared/scripts/*.sh /usr/local/bin/
 COPY desktop/cosmic/scripts/*.sh /usr/local/bin/
 
 RUN bash /usr/local/bin/cleanup.sh && \
