@@ -16,5 +16,5 @@ systemctl disable NetworkManager-wait-online.service
 groupadd -f plugdev
 readarray -t wheelarray < <(getent group wheel | cut -d ":" -f 4 | tr ',' '\n')
 for user in "${wheelarray[@]}"; do
-  usermod -aG plugdev "$user"
+  [[ -n "$user" ]] && usermod -aG plugdev "$user"
 done
