@@ -43,7 +43,7 @@ dnf5 -y swap nano-default-editor vim-default-editor
 dnf5 -y group install virtualization
 
 # Remove Firefox rpm (superseded by flatpak Firefox)
-rpm -e firefox firefox-langpacks
+rpm -e firefox firefox-langpacks 2>/dev/null || echo "WARNING: firefox packages not found in base image, skipping removal" >&2
 
 # Remove unneeded packages (currently doesn't actually reduce space, but reduces clutter)
 dnf5 -y autoremove
