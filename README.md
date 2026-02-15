@@ -3,6 +3,7 @@
 Custom bootable Fedora container images. Available variants:
 - **COSMIC** (`ghcr.io/zelf/cosmic:latest`) — COSMIC desktop environment
 - **GNOME** (`ghcr.io/zelf/gnome:latest`) — GNOME (Silverblue-based)
+- **Niri** (`ghcr.io/zelf/niri:latest`) — Niri scrollable-tiling Wayland compositor
 
 ## Initial Setup
 
@@ -32,4 +33,4 @@ sudo bootc switch --enforce-container-sigpolicy ghcr.io/zelf/gnome:latest
 sudo bootc update
 ```
 
-Replace `gnome` with `cosmic` in all commands above if using the COSMIC variant.
+Replace `gnome` with `cosmic` or `niri` in all commands above if using another variant.

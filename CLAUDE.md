@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Personal bootable OCI container images for immutable Fedora desktops. Builds custom images for COSMIC and GNOME desktop environments, plus a Fedora development toolbox. All images are published to `ghcr.io/zelf/*` and signed with Cosign.
+Personal bootable OCI container images for immutable Fedora desktops. Builds custom images for COSMIC, GNOME, and Niri desktop environments, plus a Fedora development toolbox. All images are published to `ghcr.io/zelf/*` and signed with Cosign.
 
 ## Building Images Locally
 
@@ -12,6 +12,7 @@ Personal bootable OCI container images for immutable Fedora desktops. Builds cus
 # Desktop images (requires podman or buildah)
 podman build -f desktop/cosmic/Containerfile -t cosmic .
 podman build -f desktop/gnome/Containerfile -t gnome .
+podman build -f desktop/niri/Containerfile -t niri .
 
 # Toolbox image
 podman build -f toolbox/Containerfile.fedora -t fedora-toolbox .
@@ -23,12 +24,13 @@ There are no traditional build tools (no Makefile, Cargo.toml, or justfile). The
 
 ## Architecture
 
-Three independent image variants, each with its own Containerfile and CI workflow:
+Four independent image variants, each with its own Containerfile and CI workflow:
 
 | Variant | Base Image | Registry | Workflow Schedule |
 |---------|-----------|----------|-------------------|
 | `desktop/cosmic/` | `quay.io/fedora-ostree-desktops/cosmic-atomic:43` | `ghcr.io/zelf/cosmic` | Wed 08:05 UTC |
 | `desktop/gnome/` | `quay.io/fedora-ostree-desktops/silverblue:43` | `ghcr.io/zelf/gnome` | Tue 08:05 UTC |
+| `desktop/niri/` | `quay.io/fedora-ostree-desktops/sway-atomic:43` | `ghcr.io/zelf/niri` | Thu 08:05 UTC |
 | `toolbox/` | `registry.fedoraproject.org/fedora-toolbox:43` | `ghcr.io/zelf/fedora-toolbox` | Mon 22:20 UTC |
 
 ### Desktop Image Structure
@@ -46,7 +48,7 @@ desktop/{variant}/
 ├── Containerfile          # Build definition
 ├── etc/                   # Variant-specific config overrides (gnome only)
 ├── scripts/               # Variant-specific build scripts
-│   ├── cleanup.sh         # (cosmic only) Remove unwanted base packages
+│   ├── cleanup.sh         # (cosmic/niri) Remove unwanted base packages
 │   ├── install.sh         # Package installation (RPM Fusion, codecs, tools)
 │   └── systemd.sh         # Service enablement, group setup
 └── usr/                   # Variant-specific /usr files (gnome only)
