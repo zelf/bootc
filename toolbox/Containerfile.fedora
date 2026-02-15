@@ -20,12 +20,6 @@ RUN dnf -y upgrade && \
     dnf clean all && \
     rm -rf /var/cache/dnf /tmp/*
 
-# Install npm global packages
-RUN npm install -g --no-fund \
-        @anthropic-ai/claude-code \
-        @fission-ai/openspec@latest && \
-    npm cache clean --force
-
 # Host integration symlinks for distrobox
 RUN mkdir -p /usr/local/bin && \
     ln -fs /usr/bin/distrobox-host-exec /usr/local/bin/flatpak && \
