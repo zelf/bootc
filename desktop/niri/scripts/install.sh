@@ -16,6 +16,9 @@ dnf5 -y swap mesa-vdpau-drivers mesa-vdpau-drivers-freeworld
 # Niri and Wayland session tools (swaybg/swayidle/swaylock already in base image)
 dnf5 -y install \
   niri \
+  alacritty \
+  fuzzel \
+  xwayland-satellite \
   xdg-desktop-portal-gtk \
   xdg-desktop-portal-gnome \
   waybar \
