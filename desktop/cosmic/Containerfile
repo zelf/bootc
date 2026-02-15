@@ -11,6 +11,7 @@ RUN bash /usr/local/bin/cleanup.sh && \
     ostree container commit && \
     bash /usr/local/bin/systemd.sh && \
     bash /usr/local/bin/firewalld.sh && \
+    rm /usr/local/bin/*.sh && \
     ostree container commit
 
 RUN bootc container lint
