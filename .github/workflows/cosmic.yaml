@@ -4,6 +4,10 @@ on:
     - cron: "5 8 * * 3"
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   build:
     name: Build cosmic
@@ -33,7 +37,6 @@ jobs:
           done
 
           echo "alias_tags=${BUILD_TAGS[*]}" >> $GITHUB_OUTPUT
-          echo "DEFAULT_TAG=latest" >> $GITHUB_ENV
 
       - name: Get current version
         id: labels
@@ -98,6 +101,10 @@ jobs:
 
       - name: Sign container image
         run: |
+          if [ -z "${TAGS}" ]; then
+            echo "ERROR: No digest available for signing" >&2
+            exit 1
+          fi
           cosign sign -y --key env://COSIGN_PRIVATE_KEY ${{ steps.build_image.outputs.image }}@${TAGS}
         env:
           TAGS: ${{ steps.push.outputs.outputs && fromJSON(steps.push.outputs.outputs).digest }}
