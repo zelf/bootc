@@ -50,4 +50,4 @@ dnf5 -y autoremove
 dnf5 -y clean all
 rm -rf /var/cache/dnf /var/lib/dnf
 rm -f /etc/xdg/autostart/org.gnome.Software.desktop
-find /var/log -type f -delete
+find /var/log -type f -delete 2>/dev/null || true
