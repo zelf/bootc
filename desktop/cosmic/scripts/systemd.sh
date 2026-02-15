@@ -12,6 +12,9 @@ chmod 700 /etc/containers/systemd
 
 systemctl disable NetworkManager-wait-online.service
 
-# Create plugdev group for ZSA keyboard support with user zelf as member
+# Create plugdev group and add all wheel users for ZSA keyboard support
 groupadd -f plugdev
-sed -i 's/^plugdev:.*/&zelf/' /etc/group
+readarray -t wheelarray < <(getent group wheel | cut -d ":" -f 4 | tr ',' '\n')
+for user in "${wheelarray[@]}"; do
+  usermod -aG plugdev "$user"
+done
