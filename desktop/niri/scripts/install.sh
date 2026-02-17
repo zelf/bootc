@@ -20,7 +20,7 @@ dnf5 -y install noctalia-shell
 # GTK/Qt theming for noctalia color scheme integration
 dnf5 -y install \
   adw-gtk3-theme \
-  nwg-look \
+  gnome-tweaks \
   qt6ct
 
 # Niri and Wayland session tools (swaybg/swayidle/swaylock already in base image)
