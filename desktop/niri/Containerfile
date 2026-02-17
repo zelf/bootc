@@ -2,7 +2,6 @@ FROM quay.io/fedora-ostree-desktops/sway-atomic:43
 
 COPY desktop/shared/etc /etc
 COPY desktop/shared/usr /usr
-COPY desktop/niri/etc /etc
 COPY desktop/shared/scripts/*.sh /usr/local/bin/
 COPY desktop/niri/scripts/*.sh /usr/local/bin/
 
@@ -14,6 +13,8 @@ RUN bash /usr/local/bin/cleanup.sh && \
     bash /usr/local/bin/firewalld.sh && \
     rm /usr/local/bin/*.sh && \
     ostree container commit
+
+COPY desktop/niri/etc /etc
 
 RUN bootc container lint
 
