@@ -1,0 +1,20 @@
+spawn-at-startup "qs" "-c" "noctalia-shell" "--no-duplicate"
+spawn-at-startup "swayidle"
+
+environment {
+    QT_QPA_PLATFORMTHEME "qt6ct"
+}
+
+window-rule {
+    geometry-corner-radius 20
+    clip-to-geometry true
+}
+
+debug {
+    honor-xdg-activation-with-invalid-serial
+}
+
+layer-rule {
+    match namespace="^noctalia-overview*"
+    place-within-backdrop true
+}

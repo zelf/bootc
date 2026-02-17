@@ -13,16 +13,23 @@ dnf5 -y swap noopenh264 openh264
 dnf5 -y swap mesa-va-drivers mesa-va-drivers-freeworld
 dnf5 -y swap mesa-vdpau-drivers mesa-vdpau-drivers-freeworld
 
+# Noctalia Shell (unified panel, launcher, notifications, lock screen, wallpaper)
+dnf5 -y copr enable zhangyi6324/noctalia-shell
+dnf5 -y install noctalia-shell
+
+# GTK/Qt theming for noctalia color scheme integration
+dnf5 -y install \
+  adw-gtk3-theme \
+  nwg-look \
+  qt6ct
+
 # Niri and Wayland session tools (swaybg/swayidle/swaylock already in base image)
 dnf5 -y install \
   niri \
   alacritty \
-  fuzzel \
   xwayland-satellite \
   xdg-desktop-portal-gtk \
   xdg-desktop-portal-gnome \
-  waybar \
-  mako \
   gnome-keyring \
   system-config-printer
 

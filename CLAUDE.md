@@ -46,7 +46,7 @@ desktop/shared/
 
 desktop/{variant}/
 ├── Containerfile          # Build definition
-├── etc/                   # Variant-specific config overrides (gnome only)
+├── etc/                   # Variant-specific config overrides (gnome, niri)
 ├── scripts/               # Variant-specific build scripts
 │   ├── cleanup.sh         # (cosmic/niri) Remove unwanted base packages
 │   ├── install.sh         # Package installation (RPM Fusion, codecs, tools)
@@ -54,7 +54,7 @@ desktop/{variant}/
 └── usr/                   # Variant-specific /usr files (gnome only)
 ```
 
-Gnome-only files: `etc/containers/storage.conf`, `usr/lib/ostree/prepare-root.conf`, `usr/libexec/zelf-groups`.
+Gnome-only files: `etc/containers/storage.conf`, `usr/lib/ostree/prepare-root.conf`, `usr/libexec/zelf-groups`. Niri has `etc/niri/config.kdl` (system-wide default niri config for Noctalia Shell).
 
 ### Containerfile Build Pattern
 
@@ -63,7 +63,7 @@ Desktop images COPY shared configs first, then variant-specific overrides, and c
 ```dockerfile
 COPY desktop/shared/etc /etc
 COPY desktop/shared/usr /usr
-COPY desktop/{variant}/etc /etc       # variant overrides (gnome only)
+COPY desktop/{variant}/etc /etc       # variant overrides (gnome, niri)
 COPY desktop/{variant}/usr /usr       # variant overrides (gnome only)
 COPY desktop/shared/scripts/*.sh /usr/local/bin/
 COPY desktop/{variant}/scripts/*.sh /usr/local/bin/
