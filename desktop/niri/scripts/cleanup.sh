@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Remove unwanted packages from the base image (only those actually present)
-UNWANTED=(firefox firefox-langpacks toolbox)
+UNWANTED=(firefox firefox-langpacks toolbox waybar mako)
 TO_REMOVE=()
 for pkg in "${UNWANTED[@]}"; do
   if rpm -q "$pkg" &>/dev/null; then
