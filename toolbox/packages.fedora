@@ -35,6 +35,7 @@ tree
 yq
 
 # === Version Control ===
+gh
 git
 
 # === Networking ===
