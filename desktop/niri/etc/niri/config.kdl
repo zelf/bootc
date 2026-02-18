@@ -1,10 +1,9 @@
 spawn-at-startup "qs" "-c" "noctalia-shell" "--no-duplicate"
 spawn-at-startup "swayidle"
-spawn-at-startup "gnome-keyring-daemon" "--start" "--components=ssh"
 
 environment {
     QT_QPA_PLATFORMTHEME "qt6ct"
-    SSH_AUTH_SOCK "/run/user/1000/keyring/ssh"
+    SSH_AUTH_SOCK "/run/user/1000/ssh-agent.socket"
 }
 
 window-rule {
