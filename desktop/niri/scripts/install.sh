@@ -31,6 +31,7 @@ dnf5 -y install \
   xdg-desktop-portal-gtk \
   xdg-desktop-portal-gnome \
   gnome-keyring \
+  git-credential-libsecret \
   system-config-printer
 
 # Common tools (same as cosmic/gnome)
@@ -67,6 +68,11 @@ dnf5 -y swap nano-default-editor vim-default-editor
 
 # Virtualization
 dnf5 -y group install virtualization
+
+# Noctalia polkit agent plugin (baked into skel for new users)
+mkdir -p /etc/skel/.config/noctalia/plugins
+curl -sL https://github.com/noctalia-dev/noctalia-plugins/archive/refs/heads/main.tar.gz | \
+  tar xz --strip-components=1 -C /etc/skel/.config/noctalia/plugins noctalia-plugins-main/polkit-agent
 
 # Cleanup
 dnf5 -y autoremove
