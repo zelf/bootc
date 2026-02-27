@@ -29,7 +29,6 @@ dnf5 -y install \
   alacritty \
   xwayland-satellite \
   xdg-desktop-portal-gtk \
-  xdg-desktop-portal-gnome \
   gnome-keyring \
   git-credential-libsecret \
   system-config-printer
