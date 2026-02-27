@@ -15,6 +15,7 @@ RUN bash /usr/local/bin/cleanup.sh && \
     ostree container commit
 
 COPY desktop/niri/etc /etc
+COPY desktop/niri/usr /usr
 
 RUN bootc container lint
 
