@@ -17,7 +17,7 @@ RUN bash /usr/local/bin/cleanup.sh && \
 COPY desktop/niri/etc /etc
 COPY desktop/niri/usr /usr
 
-RUN bootc container lint
+RUN dconf update && bootc container lint
 
 LABEL containers.bootc="1" \
       ostree.bootable="1"
