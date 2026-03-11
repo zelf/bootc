@@ -50,6 +50,7 @@ dnf5 -y install \
   tailscale \
   lm_sensors \
   podman-compose \
+  runc \
   steam-devices \
   osbuild-selinux
 
